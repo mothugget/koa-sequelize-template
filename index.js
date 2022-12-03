@@ -6,6 +6,7 @@ const bodyParser = require('koa-bodyparser');
 
 
 const router = require('./router');
+const db = require('./models/index.js');
 
 const PORT = 3000;
 
@@ -13,6 +14,9 @@ app.use(serve('./static'));
 app.use(bodyParser());
 app.use(router.routes());
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`); // eslint-disable-line no-console 
-});
+(async function bootstrap() {
+    await db.sequelize.sync();
+    app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+    });
+})();

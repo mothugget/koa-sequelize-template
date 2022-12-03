@@ -1,9 +1,10 @@
 'use strict';
-const models = require('../models/stuffModel');
 
-exports.getStuff = ctx => {
+const db = require('../models');
+
+exports.getStuff = async (ctx) => {
     try {
-        ctx.body = models.getAll();
+        ctx.body = await db.Stuff.findAll();
         ctx.status = 200;
     } catch (err) {
         ctx.body = err;
@@ -11,9 +12,18 @@ exports.getStuff = ctx => {
     }
 };
 
-exports.postStuff = ctx => {
+function deconstructStuff(body) {
+    let stuff = {};
+    stuff.stufftype = body.stuffType;
+    stuff.stuffgood = body.stuffGood;
+    stuff.stuffamount = body.stuffAmount;
+    return stuff
+}
+
+exports.postStuff = async (ctx) => {
     try {
-        models.postOne(ctx.request.body);
+        let stf = deconstructStuff(ctx.request.body)
+        await db.Stuff.create(stf);
         ctx.status = 201;
     } catch (err) {
         ctx.body = err;
